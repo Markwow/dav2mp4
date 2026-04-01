@@ -1,0 +1,35 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # allows manual trigger from GitHub UI
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build EXE
+        run: >
+          pyinstaller
+          --onefile
+          --windowed
+          --name "DAV Converter"
+          --icon logo.png
+          --add-data "logo.png;."
+          convert_dav_gui.py
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: DAV-Converter-Windows
+          path: dist/DAV Converter.exe
