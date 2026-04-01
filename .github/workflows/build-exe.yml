@@ -18,6 +18,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Download FFmpeg
+        run: |
+          curl -L -o ffmpeg.zip https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+          7z x ffmpeg.zip -offmpeg_extract
+          move ffmpeg_extract\ffmpeg-*-essentials_build\bin\ffmpeg.exe ffmpeg.exe
+
       - name: Build EXE
         run: >
           pyinstaller
@@ -26,6 +32,7 @@ jobs:
           --name "DAV Converter"
           --icon logo.png
           --add-data "logo.png;."
+          --add-binary "ffmpeg.exe;."
           convert_dav_gui.py
 
       - name: Upload EXE

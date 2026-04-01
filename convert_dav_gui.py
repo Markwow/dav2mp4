@@ -47,7 +47,7 @@ class DAVConverterGUI:
         self.progress_bar_rect = None
 
         # Check FFmpeg first
-        if not self._check_ffmpeg():
+        if not self._find_ffmpeg():
             messagebox.showerror(
                 "FFmpeg Not Found",
                 "FFmpeg is required but not installed.\n\n"
@@ -90,14 +90,20 @@ class DAVConverterGUI:
             self._icon_ref = icon
             self.root.iconphoto(True, icon)
 
-    @staticmethod
-    def _check_ffmpeg():
+    def _find_ffmpeg(self):
+        """Find ffmpeg — check bundled location first, then system PATH."""
+        bundled = self._asset_path("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
+        if bundled.exists():
+            self._ffmpeg = str(bundled)
+            return True
+        # Fall back to system PATH
         try:
             subprocess.run(
                 ["ffmpeg", "-version"],
                 capture_output=True,
                 check=True,
             )
+            self._ffmpeg = "ffmpeg"
             return True
         except (FileNotFoundError, subprocess.CalledProcessError):
             return False
@@ -372,13 +378,13 @@ class DAVConverterGUI:
         self._log_safe(f"Converting: {input_path.name} ...")
 
         # Try stream copy first (fast)
-        cmd = ["ffmpeg", "-y", "-i", str(input_path), "-c", "copy", str(output_path)]
+        cmd = [self._ffmpeg, "-y", "-i", str(input_path), "-c", "copy", str(output_path)]
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         if result.returncode != 0:
             self._log_safe("  Stream copy failed, re-encoding ...")
             cmd = [
-                "ffmpeg", "-y",
+                self._ffmpeg, "-y",
                 "-i", str(input_path),
                 "-c:v", "libx264", "-preset", "fast", "-crf", "23",
                 "-c:a", "aac", "-b:a", "128k",

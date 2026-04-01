@@ -11,25 +11,15 @@ A simple GUI tool for converting Hikvision `.dav` surveillance footage to `.mp4`
 - Progress tracking and conversion log
 - Choose a custom output directory or save alongside originals
 
-## Requirements
-
-- **FFmpeg** must be installed on your system
-
-### Install FFmpeg
-
-| OS | Command |
-|---|---|
-| Mac | `brew install ffmpeg` |
-| Windows | Download from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) and add to PATH |
-| Linux | `sudo apt install ffmpeg` |
-
 ## Usage
 
 ### Windows (no Python needed)
 
-Download `DAV Converter.exe` from the [latest release](../../actions) under **Actions > Build Windows EXE > Artifacts**, and double-click it.
+Download `DAV Converter.exe` from the [latest release](../../actions) under **Actions > Build Windows EXE > Artifacts**, and double-click it. FFmpeg is bundled — no extra installs needed.
 
 ### Mac / Linux
+
+Requires FFmpeg: `brew install ffmpeg` (Mac) or `sudo apt install ffmpeg` (Linux).
 
 ```bash
 pip3 install -r requirements.txt
